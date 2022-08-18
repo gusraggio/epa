@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: multitool
+  name: multitool-deployment
+  namespace: cattle-sriov-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: multitool
+  template:
+    metadata:
+      labels:
+        app: multitool
+      annotations:
+        k8s.v1.cni.cncf.io/networks: cattle-sriov-system/example-network
+    spec:
+      containers:
+      - image: praqma/network-multitool
+        imagePullPolicy: Always
+        name: multitool
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN","NET_RAW"]
+        resources:
+          limits:
+            rancher.io/intelnics:  1
+          requests:
+            rancher.io/intelnics:  1
