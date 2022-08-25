@@ -58,6 +58,10 @@ kubectl get node node1 -o json | grep feature.node.kubernetes.io/network-sriov.c
 kubectl label node $node_name feature.node.kubernetes.io/network-sriov.capable=true
 ```
 
+## Install SR-IOV chart 
 
+Install the SR-IOV chart from the App menu in the cluster explorer in rancher
+
+![rancher-apps](others/apps.png)
 
 
