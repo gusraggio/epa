@@ -49,6 +49,8 @@ Check if the capable nodes were labeled:
 
 ```
 kubectl get node node1 -o json | grep feature.node.kubernetes.io/network-sriov.capable
+```
+```
             "feature.node.kubernetes.io/network-sriov.capable": "true"
 ```
 
