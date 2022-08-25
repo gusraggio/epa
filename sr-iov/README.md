@@ -50,6 +50,7 @@ Check if the capable nodes were labeled:
 ```
 kubectl get node node1 -o json | grep feature.node.kubernetes.io/network-sriov.capable
 ```
+You should see somthing like this as output:
 ```
             "feature.node.kubernetes.io/network-sriov.capable": "true"
 ```
@@ -69,6 +70,9 @@ Install the SR-IOV chart from the App menu in the cluster explorer in rancher
 Check that the crds are present
 ```
 kubectl get crd | grep openshift
+```
+Your output should look like this:
+```
 sriovibnetworks.sriovnetwork.openshift.io            2022-04-22T09:37:55Z
 sriovnetworknodepolicies.sriovnetwork.openshift.io   2022-04-22T09:37:55Z
 sriovnetworknodestates.sriovnetwork.openshift.io     2022-04-22T09:37:55Z
@@ -95,6 +99,10 @@ kubectl apply -f node2-policy.yaml
 
 You should now see on your nodes your 4 VFs created on the selected interface
 ```
+ip link show em1
+```
+Your output should be similar to this:
+```
 node1:~ # ip link show em1
 4: em1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
     link/ether 24:6e:96:cd:15:18 brd ff:ff:ff:ff:ff:ff
@@ -110,6 +118,9 @@ node1:~ #
 The node should have now a new allocatable resource called rancher.io/intelnics. In my case:
 ```
 kubectl get node node1 -o jsonpath='{.status.allocatable}' | jq
+```
+Your output should be similar to this:
+```
 {
   "cpu": "32",
   "ephemeral-storage": "758911735828",
@@ -129,6 +140,9 @@ kubectl apply -f networks.yaml
 Again, the namespace must be the same as the previous ones. If it worked, we should see:
 ```
 kubectl get network-attachment-definitions.k8s.cni.cncf.io -A
+```
+Your output should be something like this:
+```
 NAMESPACE     NAME              AGE
 kube-system   example-network   11s
 ```
