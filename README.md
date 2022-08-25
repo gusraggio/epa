@@ -15,7 +15,9 @@ You need to add the following args to your kubelet:
 ![rancher-kubelet-args](kubelet-args.png)
 
 node-role.kubernetes.io/worker in list true
+
 topology-manager-policy=single-numa-node
+
 cpu-manager-policy=static
 
 
