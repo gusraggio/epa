@@ -3,7 +3,7 @@
 Provision an RKE2 cluster with multus and canal.
 
 ## Check cards:
-´´´
+```
 node2:~ # lshw -c network -businfo
 Bus info          Device      Class          Description
 ========================================================
@@ -12,10 +12,10 @@ pci@0000:01:00.1  em2         network        Ethernet Controller 10-Gigabit X540
 pci@0000:06:00.0  em3         network        I350 Gigabit Network Connection
 pci@0000:06:00.1  em4         network        I350 Gigabit Network Connection
 node2:~ #
-´´´
+```
 ### Check which cards are SR-IOV Capable
 
-´´´
+```
 node2:~ # lspci -vs 0000:01:00.0
 01:00.0 Ethernet controller: Intel Corporation Ethernet Controller 10-Gigabit X540-AT2 (rev 03)
 	Subsystem: Dell Ethernet 10G 4P X540/I350 rNDC
@@ -36,27 +36,27 @@ node2:~ # lspci -vs 0000:01:00.0
 	Kernel modules: ixgbe
 
 node2:~ #
-´´´ 
+``` 
 
 ## There are 2 ways of discovering the hardware: Auto Discovery or Manual
 
 ### Auto discovery with nfd
 
-´´´
+```
 kubectl apply -k https://github.com/kubernetes-sigs/node-feature-discovery/deployment/overlays/default?ref=v0.11.2
-´´´
+```
 Check if the capable nodes were labeled:
 
-´´´
+```
 kubectl get node node1 -o json | grep feature.node.kubernetes.io/network-sriov.capable
             "feature.node.kubernetes.io/network-sriov.capable": "true"
-´´´
+```
 
 ### Manual
 
-´´´
+```
 kubectl label node $node_name feature.node.kubernetes.io/network-sriov.capable=true
-´´´
+```
 
 
 
