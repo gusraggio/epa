@@ -18,7 +18,7 @@ spec:
         k8s.v1.cni.cncf.io/networks: cattle-sriov-system/example-network
     spec:
       containers:
-      - image: praqma/network-multitool
+      - image: praqma/network-multitool:alpine-extra
         imagePullPolicy: Always
         name: multitool
         securityContext:
