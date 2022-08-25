@@ -64,4 +64,69 @@ Install the SR-IOV chart from the App menu in the cluster explorer in rancher
 
 ![rancher-apps](others/apps.png)
 
+Check that the crds are present
+```
+kubectl get crd | grep openshift
+sriovibnetworks.sriovnetwork.openshift.io            2022-04-22T09:37:55Z
+sriovnetworknodepolicies.sriovnetwork.openshift.io   2022-04-22T09:37:55Z
+sriovnetworknodestates.sriovnetwork.openshift.io     2022-04-22T09:37:55Z
+sriovnetworkpoolconfigs.sriovnetwork.openshift.io    2022-04-22T09:37:55Z
+sriovnetworks.sriovnetwork.openshift.io              2022-04-22T09:37:55Z
+sriovoperatorconfigs.sriovnetwork.openshift.io       2022-04-22T09:37:55Z
+```
+to check if the VFs are there do:
+```
+kubectl get sriovnetworknodestates.sriovnetwork.openshift.io -A
+```
 
+for creating 4 VFs in node1 do:
+```
+kubectl apply -f node1-policy.yaml
+```
+
+for creating 4 VFs in node2 do:
+```
+kubectl apply -f node2-policy.yaml
+```
+
+# IMPORTANT! The namespace of the manifest must be the same where sriov-network-config-daemon and the sriov deployment are running
+
+You should now see on your nodes your 4 VFs created on the selected interface
+```
+node1:~ # ip link show em1
+4: em1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether 24:6e:96:cd:15:18 brd ff:ff:ff:ff:ff:ff
+    vf 0     link/ether 92:9e:4a:62:b3:8b brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off, query_rss off
+    vf 1     link/ether d2:5d:82:2e:94:c3 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off, query_rss off
+    vf 2     link/ether 1e:8f:7f:86:7e:e1 brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off, query_rss off
+    vf 3     link/ether b6:58:af:5d:b7:cf brd ff:ff:ff:ff:ff:ff, spoof checking on, link-state auto, trust off, query_rss off
+    altname eno1
+    altname enp1s0f0
+node1:~ #
+```
+
+The node should have now a new allocatable resource called rancher.io/intelnics. In my case:
+```
+kubectl get node node1 -o jsonpath='{.status.allocatable}' | jq
+{
+  "cpu": "32",
+  "ephemeral-storage": "758911735828",
+  "hugepages-1Gi": "0",
+  "hugepages-2Mi": "4000Mi",
+  "memory": "259480852Ki",
+  "pods": "110",
+  "rancher.io/intelnics": "4"
+}
+```
+
+Now it is time to create the network that includes the previous resources. This will end up creating a net-attach resource for multus. For example:
+```
+kubectl apply -f networks.yaml
+```
+
+Again, the namespace must be the same as the previous ones. If it worked, we should see:
+```
+kubectl get network-attachment-definitions.k8s.cni.cncf.io -A
+NAMESPACE     NAME              AGE
+kube-system   example-network   11s
+```
