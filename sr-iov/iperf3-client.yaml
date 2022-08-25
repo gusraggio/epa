@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: iperf3-client
+  name: iperf3-client-deployment
+  namespace: cattle-sriov-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iperf3-client
+  template:
+    metadata:
+      labels:
+        app: iperf3-client
+      annotations:
+        k8s.v1.cni.cncf.io/networks: cattle-sriov-system/example-network
+    spec:
+      containers:
+      - image: networkstatic/iperf3
+        name: iperf3-client
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN","NET_RAW"]
+        resources:
+          limits:
+            rancher.io/intelnics:  1
+          requests:
+            rancher.io/intelnics:  1
+        command: ["sleep"]
+        args: ["100h"]
+      nodeName: node2
