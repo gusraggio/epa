@@ -65,7 +65,7 @@ kubectl label node $node_name feature.node.kubernetes.io/network-sriov.capable=t
 
 Install the SR-IOV chart from the App menu in the cluster explorer in rancher
 
-![rancher-apps](others/apps.png)
+![rancher-apps](../img/apps.png)
 
 Check that the crds are present
 ```
