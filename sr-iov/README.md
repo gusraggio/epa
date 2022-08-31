@@ -95,6 +95,8 @@ for creating 4 VFs in node2 do:
 kubectl apply -f node2-policy.yaml
 ```
 
+## Create your  SR-IOV network
+
 # IMPORTANT! The namespace of the manifest must be the same where sriov-network-config-daemon and the sriov deployment are running
 
 You should now see on your nodes your 4 VFs created on the selected interface
@@ -263,3 +265,61 @@ Connecting to host 10.42.12.7, port 5201
 iperf Done.
 bash-5.1# 
 ```
+
+## How to run SR-IOV DPDK network
+
+To be able to run DPDK, apart from enabling IOMMU virtualization, you must configure part of our memory as hugepages. Add hugepages=xxx to your Grub kernel parameters.
+
+for creating 4 vfio-pci in node1 do:
+```
+kubectl apply -f node1-policy-dpdk.yaml
+```
+
+for creating 4 vfio-pci in node2 do:
+```
+kubectl apply -f node2-policy-dpdk.yaml
+```
+
+That will create 4VFs of type dpdk in the selected nodes,
+```
+# dpdk-devbind --status
+
+Network devices using DPDK-compatible driver
+============================================
+0000:01:10.0 'X540 Ethernet Controller Virtual Function 1515' drv=vfio-pci unused=ixgbevf
+0000:01:10.1 'X540 Ethernet Controller Virtual Function 1515' drv=vfio-pci unused=ixgbevf
+0000:01:10.2 'X540 Ethernet Controller Virtual Function 1515' drv=vfio-pci unused=ixgbevf
+0000:01:10.3 'X540 Ethernet Controller Virtual Function 1515' drv=vfio-pci unused=ixgbevf
+
+Network devices using kernel driver
+===================================
+0000:01:00.0 'Ethernet Controller 10-Gigabit X540-AT2 1528' if=em1 drv=ixgbe unused=vfio-pci *Active*
+0000:01:00.1 'Ethernet Controller 10-Gigabit X540-AT2 1528' if=em2 drv=ixgbe unused=vfio-pci *Active*
+0000:01:10.4 'X540 Ethernet Controller Virtual Function 1515' if= drv=ixgbevf unused=vfio-pci 
+0000:01:10.6 'X540 Ethernet Controller Virtual Function 1515' if=em1_3 drv=ixgbevf unused=vfio-pci 
+0000:07:00.0 'I350 Gigabit Network Connection 1521' if=em3 drv=igb unused=vfio-pci 
+0000:07:00.1 'I350 Gigabit Network Connection 1521' if=em4 drv=igb unused=vfio-pci 
+```
+
+When looking at the allocated resources for the node:
+
+```
+kubectl get node node1 -o jsonpath='{.status.allocatable}' | jq
+{
+  "cpu": "32",
+  "ephemeral-storage": "758911735828",
+  "hugepages-1Gi": "0",
+  "hugepages-2Mi": "4000Mi",
+  "memory": "259480852Ki",
+  "pods": "110",
+  "rancher.io/intelnicsDpdk": "4"
+}
+
+```
+
+Now the SriovNetwork must point to the interlnicsDpdk resource we have just created:
+
+```
+kubectl apply -f networks-dpdk.yaml
+```
+
