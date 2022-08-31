@@ -84,6 +84,18 @@ to check if the VFs are there do:
 ```
 kubectl get sriovnetworknodestates.sriovnetwork.openshift.io -A
 ```
+now lets create the nodepolicy, have in mind if you are using a different setup you need to adjust the following parameters on nod1-policy.yaml and node2-policy.yaml:
+```
+    deviceID: "1528"
+    vendor: "8086"
+    rootDevices:
+    - 0000:01:00.0
+```
+
+you can check the info with:
+```
+kubectl get sriovnetworknodestates.sriovnetwork.openshift.io -o yaml -A
+```
 
 for creating 4 VFs in node1 do:
 ```
