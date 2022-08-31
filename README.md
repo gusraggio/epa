@@ -12,6 +12,8 @@ To demostrate SR-IOV capapabilities and CPU-Pining/NUMA.
      - node-master: 1 VM with all the roles (etcd, master, worker)
      - node1 and node2: baremetal nodes with Intel Ethernet 10-Gigabit X540-AT2
 
+![arch-design](img/sr-iov-arch.png)
+
 if your hostnames are the same as above you could reuse all th yamls (node-master, node1, node2).
 
 You need to add the following args to your kubelet:
