@@ -14,7 +14,7 @@ To demostrate SR-IOV capapabilities and CPU-Pining/NUMA.
 
 ![arch-design](img/sr-iov-arch.png)
 
-if your hostnames are the same as above you could reuse all th yamls (node-master, node1, node2).
+if your hostnames are the same as above you could reuse all the yamls (node-master, node1, node2).
 
 You need to add the following args to your kubelet:
 
